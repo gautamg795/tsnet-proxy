@@ -1,0 +1,49 @@
+version: 2
+
+project_name: tsnet-proxy
+
+builds:
+  - id: tsnet-proxy
+    main: ./cmd/tsnet-proxy
+    binary: tsnet-proxy
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }} -X tailscale.com/version.longStamp=1.102.2-tsnet-proxy-{{ .Version }} -X tailscale.com/version.shortStamp=1.102.2
+
+archives:
+  - id: default
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+release:
+  github:
+    owner: gautamg795
+    name: tsnet-proxy
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
